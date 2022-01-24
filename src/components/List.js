@@ -33,7 +33,12 @@ export default function List({list}) {
   return(
     <div>
       <div>{title}</div>
-      {listBooks.map((book) => <div>{book.title}</div>)}
+      {listBooks.map((book, index) => (
+        <div className="flex flex-col" key={index}>
+          <div>{book.cover_image}</div>
+          <div>{book.title}</div>
+        </div>
+      ))}
     </div>
   )
 }

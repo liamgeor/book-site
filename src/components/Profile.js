@@ -22,6 +22,8 @@ export default function Profile() {
     const [userLists, setUserLists] = useState([])
     const [loading, setLoading] = useState(true)
 
+    const [currentBook, setCurrentBook] = useState(null)
+
     const params = useParams();
 
     useEffect(() =>{
@@ -42,7 +44,7 @@ export default function Profile() {
                 snap.data().lists.forEach((list) =>{
                     fetchUserList(list);
                 })
-                // console.log(userLists)
+                fetchCurrentBook(snap.data().current_book)
                 setLoading(false)
             }
 
@@ -67,19 +69,43 @@ export default function Profile() {
 
     }
 
+    const fetchCurrentBook = async (book) =>{
+
+        console.log("fetching current book")
+        const snap = await getDoc(doc(db, 'books', book))
+
+        console.log(snap)
+
+        if(snap.exists()){
+            console.log(snap.data())
+            setCurrentBook(snap.data())
+        }
+    }
+
     if(loading){
         return <div>loading</div>
     }
 
   return (
-    <div>
-        <div className='flex flex-row'>
-            <div>Welcome {first_name} {last_name}</div>
-            <div>followers: {followers.length}</div>
-            <div>following: {following.length}</div>
-        </div>
+    <div className="flex flex-row">
         <div>
+            <div>{first_name} {last_name}</div>
+                
             <div>{profile_pic}</div>
+            <div className="flex flex-row">
+                <div>followers: {followers.length}</div>
+                <div>following: {following.length}</div>
+            </div>
+
+            {currentBook && <>
+                <div>Current Book: </div>
+                <div>{currentBook.title}</div>
+                <div>{currentBook.cover_image}</div>
+            </>}
+        </div>
+        
+        <div>
+            
             {userLists.map((list, index) => (
                 <div className="flex flexrow" key={index}>
                     <List list={list} />
