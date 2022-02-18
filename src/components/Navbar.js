@@ -12,7 +12,7 @@ export default function Navbar() {
     <div className='justify-end align-end m-3'>
       <Link to="/sign-up" className='m-3'>Sign Up</Link>
       <Link to="/sign-in" className='m-3'>Sign In</Link>
-      <Link to="/profile" className='m-3 justify-end'>Profile</Link>
+      <Link to="/profile/currentUser" className='m-3 justify-end'>Profile</Link>
     </div>
     </div>
     

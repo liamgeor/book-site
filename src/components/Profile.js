@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {doc, query, where, getDocs, getDoc} from 'firebase/firestore'
+import {getAuth} from 'firebase/auth'
 import List from './List'
 import {db} from '../firebase.config'
-import {useParams} from 'react-router-dom'
+import {useParams, useNavigate} from 'react-router-dom'
 
 
 export default function Profile() {
@@ -22,11 +23,21 @@ export default function Profile() {
     const [userLists, setUserLists] = useState([])
     const [loading, setLoading] = useState(true)
 
+    const [currentUser, setCurrentUser] = useState({})
+
     const [currentBook, setCurrentBook] = useState(null)
 
     const params = useParams();
+    const navigate = useNavigate();
 
     useEffect(() =>{
+
+        const auth = getAuth();
+        
+
+        setCurrentUser(auth.currentUser);
+        console.log(auth.currentUser);
+
         fetchUser();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
@@ -38,13 +49,17 @@ export default function Profile() {
             const snap = await getDoc(doc(db, 'users', params.user_id))
             
             if(snap.exists()){
-                console.log(snap.data())
+                // console.log(snap.data())
                 setUser(snap.data())
                 setUserLists([])
                 snap.data().lists.forEach((list) =>{
                     fetchUserList(list);
                 })
-                fetchCurrentBook(snap.data().current_book)
+
+                if(snap.data().current_book !== ""){
+                    fetchCurrentBook(snap.data().current_book)
+                }
+                
                 setLoading(false)
             }
 
@@ -59,11 +74,11 @@ export default function Profile() {
 
     //fetch this user's lists
     const fetchUserList = async(list) =>{
-        console.log(list)
+        // console.log(list)
 
         const snap = await getDoc(doc(db, 'lists', list))
         if(snap.exists()){
-            console.log(snap.data())
+            // console.log(snap.data())
             setUserLists((prevState) =>([...prevState, snap.data()]))
         }
 
@@ -71,10 +86,10 @@ export default function Profile() {
 
     const fetchCurrentBook = async (book) =>{
 
-        console.log("fetching current book")
+        // console.log("fetching current book")
         const snap = await getDoc(doc(db, 'books', book))
 
-        console.log(snap)
+        // console.log(snap)
 
         if(snap.exists()){
             console.log(snap.data())
